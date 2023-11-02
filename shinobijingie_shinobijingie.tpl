@@ -11,7 +11,36 @@
 -->
 
 
-<div id="board" class="board shadow board4p">test</div>
+<div id="board" class="board">
+  <div id="table-center" class="whiteblock">
+    <div class="stack-nb card-margin">
+      <h3>Deck</h3>
+      <div class="table-center-deck cards-stack-empty"></div>
+      <h3>3</h3>
+    </div>
+    <div class="stack-nb card-margin">
+      <h3>Défausse</h3>
+      <div class="table-center-deck cards-stack-empty"></div>
+      <h3>3</h3>
+    </div>
+  </div>
+
+  <div id="table-hands">
+    <div id="myhand_wrap" class="whiteblock">
+      <h3>{MY_HAND}</h3>
+      <div id="myhand"></div>
+    </div>
+
+    <!-- BEGIN player -->
+    <div class="playertable whiteblock playertable_{DIR}">
+        <div class="playertablename" style="color: #{PLAYER_COLOR}">
+            {PLAYER_NAME}
+        </div>
+        <div class="playertablecard" id="playertablecard_{PLAYER_ID}"></div>
+    </div>
+    <!-- END player -->
+  </div>
+</div>
 
 <script type="text/javascript">
 
