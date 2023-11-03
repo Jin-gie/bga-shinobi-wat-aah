@@ -61,11 +61,6 @@ function (dojo, declare) {
             }
             
             // TODO: Set up your game interface here, according to "gamedatas"
-            this.playerHand = new ebg.stock();
-            this.playerHand.create(this, $('myhand'), this.cardwidth, this.cardheight);
-
-            this.playerHand.image_items_per_row = 9;
-
             // create all cards types & add it as items of the stock "playerHand"
             var clans = {
                 "Rat": [3, 3, 3, 4, 4, 4, 5, 5, 5],
@@ -90,6 +85,12 @@ function (dojo, declare) {
             };
 
 
+            // PLAYER HAND
+            this.playerHand = new ebg.stock();
+            this.playerHand.create(this, $('myhand'), this.cardwidth, this.cardheight);
+
+            this.playerHand.image_items_per_row = 9;
+
             for (let clan in clans) {
                 clans[clan].forEach(cardValue => {
                     var card_id = this.getCardId(clan, cardValue);
@@ -97,17 +98,47 @@ function (dojo, declare) {
                 });
             }
 
-            console.log("cards in hand")
             // Cards in player's hand
             for (let i in this.gamedatas.hand) {
                 var card = this.gamedatas.hand[i];
                 var type = card.type;
                 var value = card.type_arg;
-
-                console.log(card);
                 this.playerHand.addToStockWithId(this.getCardId(type, value), card.id);
             }
 
+
+            // DISCARD PILE
+            this.discardPile = new ebg.stock();
+            this.discardPile.create(this, $('discard'), this.cardwidth, this.cardheight);
+            this.discardPile.image_items_per_row = 9;
+
+            for (let clan in clans) {
+                clans[clan].forEach(cardValue => {
+                    var card_id = this.getCardId(clan, cardValue);
+                    this.discardPile.addItemType(card_id, card_id, g_gamethemeurl + 'img/shinobi_cards.jpg', card_id);
+                });
+            }
+
+            console.log(this.gamedatas.discard)
+
+            // get last card put in discard and display it
+            var discard_keys = Object.keys(this.gamedatas.discard);
+            console.log("keys" + discard_keys);
+            if (discard_keys.length > 0) {
+                var card = this.gamedatas.discard[discard_keys[0]];
+                console.log("card" + card);
+                var type = card.type;
+                var value = card.type_arg; 
+                this.discardPile.addToStockWithId(this.getCardId(type, value), card.id);
+            }
+
+
+
+
+            // Modify number of cards in deck
+            this.updateDeckCardsNb(this.gamedatas.cards_nb.deck);
+            // Modify number of cards in discard
+            this.updateDiscardCardsNb(this.gamedatas.cards_nb.discard);
             
  
             // Setup game notifications to handle (see "setupNotifications" method below)
@@ -241,6 +272,16 @@ function (dojo, declare) {
                 return yokaiValues[card];
             }
             
+        },
+
+        updateDeckCardsNb: function (new_value) {
+            var deck_cards = document.getElementById("deck-cards-nb");
+            deck_cards.textContent = new_value;
+        },
+
+        updateDiscardCardsNb: function (new_value) {
+            var discard_cards = document.getElementById("discard-cards-nb");
+            discard_cards.textContent = new_value;
         },
 
 

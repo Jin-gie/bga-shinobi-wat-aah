@@ -96,7 +96,7 @@ class shinobijingie extends Table
         $cards = array();
         // Ronins
         for ($i=0; $i < 4 ; $i++) { 
-            $cards[] = array('type' => "Ronin", 'type_arg' => 5, 'nbr' => 1);
+            $cards[] = array('type' => "Ronin", 'type_arg' => 1, 'nbr' => 1);
         }
 
         // clans
@@ -131,6 +131,8 @@ class shinobijingie extends Table
 
         // shuffle deck
         $this->cards->shuffle('deck');
+
+        $this->cards->pickCardsForLocation(4, 'deck', 'discard', $no_deck_reform=true);
 
         // deal 8 cards to each players
         $players = self::loadPlayersBasicInfos();
@@ -169,8 +171,9 @@ class shinobijingie extends Table
         $result['hand'] = $this->cards->getCardsInLocation('hand', $current_player_id);
 
         // cards in jigoku
-        $result['jigoku'] = $this->cards->getCardsInLocation('jigoku');
+        $result['discard'] = $this->cards->getCardsInLocation('discard');
 
+        $result['cards_nb'] = $this->cards->countCardsInLocations();
 
         return $result;
     }

@@ -16,12 +16,12 @@
     <div class="stack-nb card-margin">
       <h3>Deck</h3>
       <div class="table-center-deck cards-stack-empty"></div>
-      <h3>3</h3>
+      <h3 id="deck-cards-nb">3</h3>
     </div>
     <div class="stack-nb card-margin">
       <h3>Défausse</h3>
-      <div class="table-center-deck cards-stack-empty"></div>
-      <h3>3</h3>
+      <div class="table-center-deck cards-stack-empty" id="discard"></div>
+      <h3 id="discard-cards-nb">3</h3>
     </div>
   </div>
 
