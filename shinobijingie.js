@@ -18,7 +18,8 @@
 define([
     "dojo","dojo/_base/declare",
     "ebg/core/gamegui",
-    "ebg/counter"
+    "ebg/counter",
+    "ebg/stock"
 ],
 function (dojo, declare) {
     return declare("bgagame.shinobijingie", ebg.core.gamegui, {
@@ -28,6 +29,9 @@ function (dojo, declare) {
             // Here, you can init the global variables of your user interface
             // Example:
             // this.myGlobalValue = 0;
+
+            this.cardwidth = 88;
+            this.cardheight = 142;
 
         },
         
@@ -57,6 +61,53 @@ function (dojo, declare) {
             }
             
             // TODO: Set up your game interface here, according to "gamedatas"
+            this.playerHand = new ebg.stock();
+            this.playerHand.create(this, $('myhand'), this.cardwidth, this.cardheight);
+
+            this.playerHand.image_items_per_row = 9;
+
+            // create all cards types & add it as items of the stock "playerHand"
+            var clans = {
+                "Rat": [3, 3, 3, 4, 4, 4, 5, 5, 5],
+                "Fox": [2, 3, 3, 3, 4, 4, 4, 4, 5],
+                "Toad": [1, 1, 3, 3, 3, 4, 4, 4, 4],
+                "Spider": [3, 3, 3, 3, 4, 4, 4, 4, 4],
+                "Raven": [2, 2, 2, 3, 3, 3, 4, 4, 4],
+                "Carp": [1, 1, 2, 2, 3, 3, 4, 4, 5],
+                "Dragon": [3, 3, 3, 4, 4, 4, 4, 5, 5],
+                "Monkey": [1, 1, 1, 1, 2, 2, 2, 2, 3],
+                "Bear": [6, 6, 6, 6, 6, 6, 6, 6, 6],
+                "Ronin" : [1],
+                "y_Dragon": [5],
+                "y_Yurei": [1],
+                "y_Kitsune": [3],
+                "y_Kappa": [3],
+                "y_Saitenza": [3],
+                "y_The Monkey King": [1],
+                "y_The Old Hermit": [3],
+                "y_Mezumi": [3],
+                "y_Oni": [8],
+            };
+
+
+            for (let clan in clans) {
+                clans[clan].forEach(cardValue => {
+                    var card_id = this.getCardId(clan, cardValue);
+                    this.playerHand.addItemType(card_id, card_id, g_gamethemeurl + 'img/shinobi_cards.jpg', card_id);
+                });
+            }
+
+            console.log("cards in hand")
+            // Cards in player's hand
+            for (let i in this.gamedatas.hand) {
+                var card = this.gamedatas.hand[i];
+                var type = card.type;
+                var value = card.type_arg;
+
+                console.log(card);
+                this.playerHand.addToStockWithId(this.getCardId(type, value), card.id);
+            }
+
             
  
             // Setup game notifications to handle (see "setupNotifications" method below)
@@ -157,6 +208,40 @@ function (dojo, declare) {
             script.
         
         */
+
+        getCardId: function(card, value) {
+            var clanValues = {
+                "Toad": { 1: 0, 3: 1, 4: 2 },
+                "Spider": { 3: 3, 4: 4 },
+                "Raven": { 2: 5, 3: 6, 4: 7 },
+                "Carp": { 1: 8, 2: 9, 3: 10, 4: 11, 5: 12 },
+                "Dragon": { 3: 13, 4: 14, 5: 15 },
+                "Rat": { 3: 16, 4: 17, 5: 18 },
+                "Monkey": { 1: 19, 2: 20, 3: 21 },
+                "Fox": { 2: 22, 3: 23, 4: 24, 5: 25 },
+                "Bear" : {6 : 26},
+                "Ronin" : { 1 : 36}
+            };
+
+            var yokaiValues = {
+                "y_Dragon" : 27,
+                "y_Yurei" : 28,
+                "y_Kitsune" : 29,
+                "y_Kappa" : 30,
+                "y_Saitenza" : 31,
+                "y_The Monkey King" : 32,
+                "y_The Old Hermit" : 33,
+                "y_Mezumi" : 34,
+                "y_Oni" : 35
+            };
+
+            if (card.split("_").length === 1) {
+                return clanValues[card][value];
+            } else {
+                return yokaiValues[card];
+            }
+            
+        },
 
 
         ///////////////////////////////////////////////////

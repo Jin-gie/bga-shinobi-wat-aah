@@ -31,6 +31,9 @@ class shinobijingie extends Table
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
+
+        $this->cards = self::getNew("module.common.deck");
+        $this->cards->init("card");
         
         self::initGameStateLabels( array( 
             //    "my_first_global_variable" => 10,
@@ -88,6 +91,52 @@ class shinobijingie extends Table
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
         // TODO: setup the initial game situation here
+
+        // Create deck of card with all cards
+        $cards = array();
+        // Ronins
+        for ($i=0; $i < 4 ; $i++) { 
+            $cards[] = array('type' => "Ronin", 'type_arg' => 5, 'nbr' => 1);
+        }
+
+        // clans
+        $clans = array(
+            "Rat"       => array(3,3,3,4,4,4,5,5,5),
+            "Fox"       => array(2,3,3,3,4,4,4,4,5),
+            "Toad"      => array(1,1,3,3,3,4,4,4,4),
+            "Spider"    => array(3,3,3,3,4,4,4,4,4),
+            "Raven"     => array(2,2,2,3,3,3,4,4,4),
+            "Carp"      => array(1,1,2,2,3,3,4,4,5),
+            "Dragon"    => array(3,3,3,4,4,4,4,5,5),
+            "Monkey"    => array(1,1,1,1,2,2,2,2,3),
+            "Bear"      => array(6,6,6,6,6,6,6,6,6),
+            "y_Dragon"          => array(5),
+            "y_Yurei"           => array(1),
+            "y_Kitsune"         => array(3),
+            "y_Kappa"           => array(3),
+            "y_Saitenza"        => array(3),
+            "y_The Monkey King" => array(1),
+            "y_The Ols Hermit"  => array(3),
+            "y_Mezumi"          => array(3),
+            "y_Oni"             => array(8)
+        );
+
+        foreach ($clans as $clan => $values) {
+            foreach ($values as $key => $value) {
+                $cards[] = array('type' => $clan, 'type_arg' => $value, 'nbr' => 1);
+            }
+        }
+
+        $this->cards->createCards($cards, 'deck');
+
+        // shuffle deck
+        $this->cards->shuffle('deck');
+
+        // deal 8 cards to each players
+        $players = self::loadPlayersBasicInfos();
+        foreach ($players as $player_id => $value) {
+            $cards = $this->cards->pickCards(8,'deck',$player_id);
+        }
        
 
         // Activate first player (which is in general a good idea :) )
@@ -117,7 +166,12 @@ class shinobijingie extends Table
         $result['players'] = self::getCollectionFromDb( $sql );
   
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
-  
+        $result['hand'] = $this->cards->getCardsInLocation('hand', $current_player_id);
+
+        // cards in jigoku
+        $result['jigoku'] = $this->cards->getCardsInLocation('jigoku');
+
+
         return $result;
     }
 
