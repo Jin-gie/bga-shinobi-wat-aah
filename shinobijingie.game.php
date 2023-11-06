@@ -133,16 +133,22 @@ class shinobijingie extends Table
         $this->cards->shuffle('deck');
 
         $this->cards->pickCardsForLocation(4, 'deck', 'discard', $no_deck_reform=true);
-
-        // deal 8 cards to each players
-        $players = self::loadPlayersBasicInfos();
-        foreach ($players as $player_id => $value) {
-            $cards = $this->cards->pickCards(8,'deck',$player_id);
-        }
        
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
+
+        $current_player_id = self::getActivePlayerId();
+
+        // deal 8 cards to each players
+        $players = self::loadPlayersBasicInfos();
+        foreach ($players as $player_id => $value) {
+            if ($player_id == $current_player_id) {
+                $cards = $this->cards->pickCards(7,'deck',$player_id);
+            } else {
+                $cards = $this->cards->pickCards(8,'deck',$player_id);
+            }
+        }
 
         /************ End of the game initialization *****/
     }
