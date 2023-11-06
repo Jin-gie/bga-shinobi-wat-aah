@@ -62,75 +62,37 @@ function (dojo, declare) {
             
             // TODO: Set up your game interface here, according to "gamedatas"
             // create all cards types & add it as items of the stock "playerHand"
-            var clans = {
-                "Rat": [3, 3, 3, 4, 4, 4, 5, 5, 5],
-                "Fox": [2, 3, 3, 3, 4, 4, 4, 4, 5],
-                "Toad": [1, 1, 3, 3, 3, 4, 4, 4, 4],
-                "Spider": [3, 3, 3, 3, 4, 4, 4, 4, 4],
-                "Raven": [2, 2, 2, 3, 3, 3, 4, 4, 4],
-                "Carp": [1, 1, 2, 2, 3, 3, 4, 4, 5],
-                "Dragon": [3, 3, 3, 4, 4, 4, 4, 5, 5],
-                "Monkey": [1, 1, 1, 1, 2, 2, 2, 2, 3],
-                "Bear": [6, 6, 6, 6, 6, 6, 6, 6, 6],
-                "Ronin" : [1],
-                "y_Dragon": [5],
-                "y_Yurei": [1],
-                "y_Kitsune": [3],
-                "y_Kappa": [3],
-                "y_Saitenza": [3],
-                "y_The Monkey King": [1],
-                "y_The Old Hermit": [3],
-                "y_Mezumi": [3],
-                "y_Oni": [8],
-            };
 
 
             // PLAYER HAND
             this.playerHand = new ebg.stock();
-            this.playerHand.create(this, $('myhand'), this.cardwidth, this.cardheight);
-
-            this.playerHand.image_items_per_row = 9;
-
-            for (let clan in clans) {
-                clans[clan].forEach(cardValue => {
-                    var card_id = this.getCardId(clan, cardValue);
-                    this.playerHand.addItemType(card_id, card_id, g_gamethemeurl + 'img/shinobi_cards.jpg', card_id);
-                });
-            }
-
-            // Cards in player's hand
-            for (let i in this.gamedatas.hand) {
-                var card = this.gamedatas.hand[i];
-                var type = card.type;
-                var value = card.type_arg;
-                this.playerHand.addToStockWithId(this.getCardId(type, value), card.id);
-            }
-
+            this.createStock(this.playerHand, $('myhand'), this.gamedatas.hand);
+            
 
             // DISCARD PILE
             this.discardPile = new ebg.stock();
-            this.discardPile.create(this, $('discard'), this.cardwidth, this.cardheight);
-            this.discardPile.image_items_per_row = 9;
+            this.createStock(this.discardPile, $('discard'), this.gamedatas.discard);
+            this.discardPile.container_div.width = "60px"; // enought just for 1 card
+            this.discardPile.autowidth = false; // this is required so it obeys the width set above
+            this.discardPile.use_vertical_overlap_as_offset = false; // this is to use normal vertical_overlap
+            this.discardPile.vertical_overlap = 100; // overlap
+            this.discardPile.horizontal_overlap  = -1; // current bug in stock - this is needed to enable z-index on overlapping items
+            this.discardPile.item_margin = 0; // has to be 0 if using overlap
+            this.discardPile.updateDisplay(); // re-layout
 
-            for (let clan in clans) {
-                clans[clan].forEach(cardValue => {
-                    var card_id = this.getCardId(clan, cardValue);
-                    this.discardPile.addItemType(card_id, card_id, g_gamethemeurl + 'img/shinobi_cards.jpg', card_id);
-                });
-            }
-
-            console.log(this.gamedatas.discard)
 
             // get last card put in discard and display it
-            var discard_keys = Object.keys(this.gamedatas.discard);
-            console.log("keys" + discard_keys);
-            if (discard_keys.length > 0) {
-                var card = this.gamedatas.discard[discard_keys[0]];
-                console.log("card" + card);
-                var type = card.type;
-                var value = card.type_arg; 
-                this.discardPile.addToStockWithId(this.getCardId(type, value), card.id);
-            }
+            // var discard_keys = Object.keys(this.gamedatas.discard);
+            // console.log("keys" + discard_keys);
+            // if (discard_keys.length > 0) {
+            //     var card = this.gamedatas.discard[discard_keys[0]];
+            //     console.log("card" + card);
+            //     var type = card.type;
+            //     var value = card.type_arg; 
+            //     this.discardPile.addToStockWithId(this.getCardId(type, value), card.id);
+            // }
+
+            dojo.connect(this.discardPile, 'onChangeSelection', this, 'onPlayerDiscardChangeSelection');
 
 
 
@@ -139,6 +101,7 @@ function (dojo, declare) {
             this.updateDeckCardsNb(this.gamedatas.cards_nb.deck);
             // Modify number of cards in discard
             this.updateDiscardCardsNb(this.gamedatas.cards_nb.discard);
+
             
  
             // Setup game notifications to handle (see "setupNotifications" method below)
@@ -240,6 +203,54 @@ function (dojo, declare) {
         
         */
 
+        getClans: function() {
+            return (
+                {
+                    "Rat": [3, 3, 3, 4, 4, 4, 5, 5, 5],
+                    "Fox": [2, 3, 3, 3, 4, 4, 4, 4, 5],
+                    "Toad": [1, 1, 3, 3, 3, 4, 4, 4, 4],
+                    "Spider": [3, 3, 3, 3, 4, 4, 4, 4, 4],
+                    "Raven": [2, 2, 2, 3, 3, 3, 4, 4, 4],
+                    "Carp": [1, 1, 2, 2, 3, 3, 4, 4, 5],
+                    "Dragon": [3, 3, 3, 4, 4, 4, 4, 5, 5],
+                    "Monkey": [1, 1, 1, 1, 2, 2, 2, 2, 3],
+                    "Bear": [6, 6, 6, 6, 6, 6, 6, 6, 6],
+                    "Ronin" : [1],
+                    "y_Dragon": [5],
+                    "y_Yurei": [1],
+                    "y_Kitsune": [3],
+                    "y_Kappa": [3],
+                    "y_Saitenza": [3],
+                    "y_The Monkey King": [1],
+                    "y_The Old Hermit": [3],
+                    "y_Mezumi": [3],
+                    "y_Oni": [8],
+                }
+            );
+        },
+
+        createStock: function(stock, div, cards) {
+            stock.create(this, div, this.cardwidth, this.cardheight);
+
+            stock.image_items_per_row = 9;
+            let clans = this.getClans();
+
+            for (let clan in clans) {
+                clans[clan].forEach(cardValue => {
+                    var card_id = this.getCardId(clan, cardValue);
+                    stock.addItemType(card_id, card_id, g_gamethemeurl + 'img/shinobi_cards.jpg', card_id);
+                });
+            }
+
+            // Cards in player's hand
+            for (let i in cards) {
+                var card = cards[i];
+                var type = card.type;
+                var value = card.type_arg;
+                stock.addToStockWithId(this.getCardId(type, value), card.id);
+            }
+        },
+
         getCardId: function(card, value) {
             var clanValues = {
                 "Toad": { 1: 0, 3: 1, 4: 2 },
@@ -284,6 +295,38 @@ function (dojo, declare) {
             discard_cards.textContent = new_value;
         },
 
+        showDiscardPile: function() {
+            this.myDlg = new ebg.popindialog();
+            this.myDlg.create('discardPileDialog');
+            this.myDlg.setTitle(_("Jigoku"));
+
+            var html = this.format_block('jstpl_discardDialog', {
+
+            });
+
+            // show the dialog
+            this.myDlg.setContent(html);
+
+            this.discardDialog = new ebg.stock();
+            this.createStock(this.discardDialog, $('discard-dialog'), this.gamedatas.discard);
+
+            this.myDlg.show();
+
+            dojo.connect($('dialog-ok-button'), 'onclick', this, (event) => {
+                event.preventDefault();
+                this.myDlg.destroy();
+            });
+        },
+
+
+        onPlayerDiscardChangeSelection: function() {
+            var items = this.discardPile.getSelectedItems();
+
+            if (items.length > 0) {
+                this.showDiscardPile();
+                this.discardPile.unselectAll();
+            }
+        },
 
         ///////////////////////////////////////////////////
         //// Player's action
