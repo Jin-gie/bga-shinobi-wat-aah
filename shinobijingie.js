@@ -33,6 +33,53 @@ function (dojo, declare) {
             this.cardwidth = 88;
             this.cardheight = 142;
 
+            this.clanValues = {
+                "Toad": { 1: 0, 3: 1, 4: 2 },
+                "Spider": { 3: 3, 4: 4 },
+                "Raven": { 2: 5, 3: 6, 4: 7 },
+                "Carp": { 1: 8, 2: 9, 3: 10, 4: 11, 5: 12 },
+                "Dragon": { 3: 13, 4: 14, 5: 15 },
+                "Rat": { 3: 16, 4: 17, 5: 18 },
+                "Monkey": { 1: 19, 2: 20, 3: 21 },
+                "Fox": { 2: 22, 3: 23, 4: 24, 5: 25 },
+                "Bear" : {6 : 26},
+                "Ronin" : { 1 : 36}
+            };
+
+            this.yokaiValues = {
+                "y_Dragon" : 27,
+                "y_Yurei" : 28,
+                "y_Kitsune" : 29,
+                "y_Kappa" : 30,
+                "y_Saitenza" : 31,
+                "y_The Monkey King" : 32,
+                "y_The Old Hermit" : 33,
+                "y_Mezumi" : 34,
+                "y_Oni" : 35
+            };
+
+            this.descs = {
+                "Toad": "Return 1 card to its owner's hand",
+                "Spider": "Destroy 1 card",
+                "Raven": "Look through the Jigoku and choose 2 cards to add to your hand",
+                "Carp": "Draw 2 cards from the Shinobi deck",
+                "Dragon": "Look at the 1st 3 cards of the Shinobi deck, keep 1, and destroy the others",
+                "Rat": "An opponent must discard 2 cards of his choice",
+                "Monkey": "Copy the [2 cards] power of an enemy clan",
+                "Fox": "Exchange 3 cards from your hand for 3 cards from an opponent's hand, chosen by him",
+                "Bear" : "-",
+                "Ronin" : "The Ronin is considered to be a card of the clan with which it is placed",
+                "y_Dragon" : "Consultez les 5 premières cartes de la pile Shinobi, gardez-en 2 et défaussez les autres",
+                "y_Yurei" : "Destroy 1 clan",
+                "y_Kitsune" : "Echangez la totalité de votre main contre celle d'un adversaire",
+                "y_Kappa" : "Return 1 clan to its owner's hand",
+                "y_Saitenza" : "Détruisez tous les Yokai du jeu",
+                "y_The Monkey King" : "Copier le pouvoir [3 cartes] d’un clan adverse",
+                "y_The Old Hermit" : "Draw 4 cards from the Shinobi deck",
+                "y_Mezumi" : "An opponent must discard 3 cards of his choice",
+                "y_Oni" : "“Boo!”"
+            }
+
         },
         
         /*
@@ -231,6 +278,7 @@ function (dojo, declare) {
 
         createStock: function(stock, div, cards) {
             stock.create(this, div, this.cardwidth, this.cardheight);
+            stock.onItemCreate = dojo.hitch(this, 'setupNewCard');
 
             stock.image_items_per_row = 9;
             let clans = this.getClans();
@@ -251,38 +299,35 @@ function (dojo, declare) {
             }
         },
 
+        setupNewCard: function(card_div, card_type_id, card_id) {
+            // card_type_id => card id in sprite
+            this.addTooltip(card_div.id, _(this.descs[this.getCardClanName(card_type_id)]), '' );
+        },
+
         getCardId: function(card, value) {
-            var clanValues = {
-                "Toad": { 1: 0, 3: 1, 4: 2 },
-                "Spider": { 3: 3, 4: 4 },
-                "Raven": { 2: 5, 3: 6, 4: 7 },
-                "Carp": { 1: 8, 2: 9, 3: 10, 4: 11, 5: 12 },
-                "Dragon": { 3: 13, 4: 14, 5: 15 },
-                "Rat": { 3: 16, 4: 17, 5: 18 },
-                "Monkey": { 1: 19, 2: 20, 3: 21 },
-                "Fox": { 2: 22, 3: 23, 4: 24, 5: 25 },
-                "Bear" : {6 : 26},
-                "Ronin" : { 1 : 36}
-            };
-
-            var yokaiValues = {
-                "y_Dragon" : 27,
-                "y_Yurei" : 28,
-                "y_Kitsune" : 29,
-                "y_Kappa" : 30,
-                "y_Saitenza" : 31,
-                "y_The Monkey King" : 32,
-                "y_The Old Hermit" : 33,
-                "y_Mezumi" : 34,
-                "y_Oni" : 35
-            };
-
             if (card.split("_").length === 1) {
-                return clanValues[card][value];
+                return this.clanValues[card][value];
             } else {
-                return yokaiValues[card];
+                return this.yokaiValues[card];
             }
-            
+        },
+
+        getCardClanName: function(cardId) {
+            for (var clanName in this.clanValues) {
+                for (var value in this.clanValues[clanName]) {
+                    if (this.clanValues[clanName][value] === cardId) {
+                        return(clanName);
+                    }
+                }
+            }
+        
+            for (var yokaiName in this.yokaiValues) {
+                if (this.yokaiValues[yokaiName] === cardId) {
+                    return(yokaiName);
+                }
+            }
+        
+            return null;
         },
 
         updateDeckCardsNb: function (new_value) {
