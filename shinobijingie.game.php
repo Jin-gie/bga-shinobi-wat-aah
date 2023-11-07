@@ -64,7 +64,7 @@ class shinobijingie extends Table
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
         $gameinfos = self::getGameinfos();
-        $default_colors = $gameinfos['player_colors'];
+        $default_colors = array("777369", "D1A627", "7E1E17", "1D1914");
  
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
@@ -77,7 +77,7 @@ class shinobijingie extends Table
         }
         $sql .= implode( ',', $values );
         self::DbQuery( $sql );
-        self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
+        // self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
@@ -115,8 +115,8 @@ class shinobijingie extends Table
             "y_Kitsune"         => array(3),
             "y_Kappa"           => array(3),
             "y_Saitenza"        => array(3),
-            "y_The Monkey King" => array(1),
-            "y_The Ols Hermit"  => array(3),
+            "y_TheMonkeyKing" => array(1),
+            "y_TheOldHermit"  => array(3),
             "y_Mezumi"          => array(3),
             "y_Oni"             => array(8)
         );
@@ -149,6 +149,7 @@ class shinobijingie extends Table
                 $cards = $this->cards->pickCards(8,'deck',$player_id);
             }
         }
+
 
         /************ End of the game initialization *****/
     }

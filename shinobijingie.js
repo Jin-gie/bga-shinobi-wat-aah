@@ -52,8 +52,8 @@ function (dojo, declare) {
                 "y_Kitsune" : 29,
                 "y_Kappa" : 30,
                 "y_Saitenza" : 31,
-                "y_The Monkey King" : 32,
-                "y_The Old Hermit" : 33,
+                "y_TheMonkeyKing" : 32,
+                "y_TheOldHermit" : 33,
                 "y_Mezumi" : 34,
                 "y_Oni" : 35
             };
@@ -74,8 +74,8 @@ function (dojo, declare) {
                 "y_Kitsune" : "Echangez la totalité de votre main contre celle d'un adversaire",
                 "y_Kappa" : "Return 1 clan to its owner's hand",
                 "y_Saitenza" : "Détruisez tous les Yokai du jeu",
-                "y_The Monkey King" : "Copier le pouvoir [3 cartes] d’un clan adverse",
-                "y_The Old Hermit" : "Draw 4 cards from the Shinobi deck",
+                "y_TheMonkeyKing" : "Copier le pouvoir [3 cartes] d’un clan adverse",
+                "y_TheOldHermit" : "Draw 4 cards from the Shinobi deck",
                 "y_Mezumi" : "An opponent must discard 3 cards of his choice",
                 "y_Oni" : "“Boo!”"
             }
@@ -268,8 +268,8 @@ function (dojo, declare) {
                     "y_Kitsune": [3],
                     "y_Kappa": [3],
                     "y_Saitenza": [3],
-                    "y_The Monkey King": [1],
-                    "y_The Old Hermit": [3],
+                    "y_TheMonkeyKing": [1],
+                    "y_TheOldHermit": [3],
                     "y_Mezumi": [3],
                     "y_Oni": [8],
                 }
@@ -290,7 +290,6 @@ function (dojo, declare) {
                 });
             }
 
-            // Cards in player's hand
             for (let i in cards) {
                 var card = cards[i];
                 var type = card.type;
