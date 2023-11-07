@@ -28,13 +28,21 @@
   <div id="table-hands">
     <div id="myhand_wrap" class="whiteblock">
       <h3>{MY_HAND}</h3>
+      <div class="ninja-master">
+        <div class="ninja ninja_{PLAYER_COLOR}"></div>
+        <div id="my_hand_ninja">3</div>
+      </div>
       <div id="myhand"></div>
     </div>
 
     <!-- BEGIN player -->
-    <div class="playertable whiteblock playertable_{DIR}">
+    <div class="playertable whiteblock">
         <div class="playertablename" style="color: #{PLAYER_COLOR}">
             {PLAYER_NAME}
+        </div>
+        <div class="ninja-master">
+          <div class="ninja ninja_{PLAYER_COLOR}"></div>
+          <div id="my_hand_ninja">3</div>
         </div>
         <div class="playertablecard" id="playertablecard_{PLAYER_ID}"></div>
     </div>

@@ -58,9 +58,34 @@
     width: 710px;
 }
 
+.ninja {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #007bff;
+}
 
+.ninja-master {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
 
+.ninja_777369 {
+ background-color: #777369;
+}
 
+.ninja_D1A627 {
+    background-color: #D1A627;
+}
+
+.ninja_7E1E17 {
+    background-color: #7E1E17;
+}
+
+.ninja_1D1914 {
+    background-color: #1D1914;
+}
 
 
 
