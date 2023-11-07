@@ -29,7 +29,7 @@
     <div id="myhand_wrap" class="whiteblock">
       <h3>{MY_HAND}</h3>
       <div class="ninja-master">
-        <div class="ninja ninja_{PLAYER_COLOR}"></div>
+        <div class="ninja" id="player_corrupted"></div>
         <div id="my_hand_ninja">3</div>
       </div>
       <div id="myhand"></div>

@@ -110,6 +110,7 @@ function (dojo, declare) {
             // TODO: Set up your game interface here, according to "gamedatas"
             // create all cards types & add it as items of the stock "playerHand"
 
+            dojo.addClass("player_corrupted", "ninja_" + this.gamedatas.players[ this.player_id ].color);
 
             // PLAYER HAND
             this.playerHand = new ebg.stock();
