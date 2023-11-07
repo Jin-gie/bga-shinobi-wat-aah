@@ -58,42 +58,49 @@ $machinestates = array(
         "description" => "",
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array( "" => 2 )
+        "transitions" => array( "" => 10 )
     ),
     
     // Note: ID=2 => your first state
 
-    2 => array(
-    		"name" => "playerTurn",
-    		"description" => clienttranslate('${actplayer} must play a card or pass'),
-    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "playCard", "pass" ),
-    		"transitions" => array( "playCard" => 2, "pass" => 2 )
+    10 => array(
+        "name" => "drawPhase",
+        "description" => clienttranslate('${actplayer} must draw a card or corrupt a card'),
+        "descriptionmyturn" => clienttranslate('${you} must draw a card or corrupt a card'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "recruit", "beCorrupt" ),
+        "transitions" => array("recruit" => 11, "beCorrupt" => 12)
     ),
-    
-/*
-    Examples:
-    
-    2 => array(
+
+
+    11 => array(
+        "name" => "recruit",
+        "description" => '',
+        "type" => "game",
+        "action" => "stRecruit",
+        "updateGameProgression" => true,   
+        "transitions" => array( "nextPlayer" => 30 )
+    ),
+
+
+    12 => array(
+        "name" => "beCorrupt",
+        "description" => '',
+        "type" => "game",
+        "action" => "stBeCorrupt",
+        "updateGameProgression" => true,   
+        "transitions" => array( "nextPlayer" => 30 )
+    ),
+
+    30 => array(
         "name" => "nextPlayer",
         "description" => '',
         "type" => "game",
         "action" => "stNextPlayer",
         "updateGameProgression" => true,   
-        "transitions" => array( "endGame" => 99, "nextPlayer" => 10 )
+        "transitions" => array( "nextTurn" => 10, "gameEnd" => 99 )
     ),
-    
-    10 => array(
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "playCard", "pass" ),
-        "transitions" => array( "playCard" => 2, "pass" => 2 )
-    ), 
 
-*/    
    
     // Final state.
     // Please do not modify (and do not overload action/args methods).

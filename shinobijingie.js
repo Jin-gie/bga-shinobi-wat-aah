@@ -225,6 +225,10 @@ function (dojo, declare) {
             {            
                 switch( stateName )
                 {
+                    case 'drawPhase':
+                        this.addActionButton('recruit_button', _('Draw one card'), 'onRecruitBtn');
+                        this.addActionButton('beCorrupt_button', _('Be Corrupt'), 'onBeCorruptBtn');
+                        break;
 /*               
                  Example:
  
@@ -386,6 +390,32 @@ function (dojo, declare) {
             _ make a call to the game server
         
         */
+
+        onRecruitBtn: function(evt) {
+            console.log("Draw card");
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+
+            if ( this.checkAction('recruit') ) // check that this action is possible at this moment
+            {
+                this.ajaxcall("/shinobijingie/shinobijingie/recruit.html", {
+                }, this, function(result) {});
+            }
+        },
+
+        onBeCorruptBtn: function(evt) {
+            console.log("Be corrupt");
+
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+
+            if ( this.checkAction('beCorrupt') ) // check that this action is possible at this moment
+            {
+                this.ajaxcall("/shinobijingie/shinobijingie/beCorrupt.html", {
+                }, this, function(result) {});
+            }
+        },
         
         /* Example:
         
@@ -437,6 +467,8 @@ function (dojo, declare) {
         setupNotifications: function()
         {
             console.log( 'notifications subscriptions setup' );
+            dojo.subscribe( 'recruit', this, "notif_recruit" );
+            this.notifqueue.setSynchronous( 'recruit', 500 );
             
             // TODO: here, associate your game notifications with local methods
             
@@ -453,6 +485,11 @@ function (dojo, declare) {
         
         // TODO: from this point and below, you can write your game notifications handling methods
         
+        notif_recruit: function(notif) {
+            // remove current possible moves (makes the board more clear)
+            console.log(notif.args.card);
+        },
+
         /*
         Example:
         

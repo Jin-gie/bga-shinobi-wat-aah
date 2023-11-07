@@ -41,6 +41,26 @@
   	
   	// TODO: defines your action entry points there
 
+    public function recruit() {
+      self::setAjaxMode();     
+
+      // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
+      $this->game->recruit();
+
+      self::ajaxResponse( );
+
+    }
+
+    public function beCorrupt() {
+      self::setAjaxMode();     
+
+      // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
+      $this->game->beCorrupt();
+
+      self::ajaxResponse( );
+
+    }
+
 
     /*
     

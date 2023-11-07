@@ -222,6 +222,18 @@ class shinobijingie extends Table
         (note: each method below must match an input method in shinobijingie.action.php)
     */
 
+    function recruit() {
+        self::checkAction('recruit');
+
+        $this->gamestate->nextState("recruit");
+    }
+
+    function beCorrupt() {
+        // self::checkAction('beCorrupt');
+
+        // $this->gamestate->nextState("beCorrupt");
+    }
+
     /*
     
     Example:
@@ -284,6 +296,35 @@ class shinobijingie extends Table
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
+
+    function stRecruit()
+    {
+        
+        $current_player_id = self::getActivePlayerId();
+        $card = $this->cards->pickCards(1,'deck',$current_player_id);
+
+        // Notify player of their new card
+        self::notifyPlayer($current_player_id, 'recruit', clienttranslate('${player_name} draws a card'), array(
+            'player_id' => $current_player_id,
+            'player_name' => self::getActivePlayerName(),
+            'new_card' => $card
+        ));
+        
+        // go to another gamestate
+        $this->gamestate->nextState( 'nextPlayer' );
+    }
+    
+    function stBeCorrupt() {
+        $this->gamestate->nextState( 'nextPlayer' );
+    }
+
+    function stNextPlayer() {
+        $player_id = self::activeNextPlayer();
+        self::giveExtraTime($player_id);
+
+        $this->gamestate->nextState( 'nextTurn' );
+
+    }
     
     /*
     
