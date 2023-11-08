@@ -143,14 +143,13 @@ function (dojo, declare) {
             dojo.connect(this.discardPile, 'onChangeSelection', this, 'onPlayerDiscardChangeSelection');
 
 
-
-
             // Modify number of cards in deck
             this.updateDeckCardsNb(this.gamedatas.cards_nb.deck);
             // Modify number of cards in discard
             this.updateDiscardCardsNb(this.gamedatas.cards_nb.discard);
+            // Modify number of cards in corrupt areas
+            this.updateCorruptCardsNb(this.gamedatas.corrupt_cards);
 
-            
  
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -344,6 +343,23 @@ function (dojo, declare) {
             discard_cards.textContent = new_value;
         },
 
+        updateCorruptCardsNb: function (new_value) {
+            for( var player_id in this.gamedatas.players )
+            {
+                var player = this.gamedatas.players[player_id];
+                var div = dojo.query('.ninja_' + player.color).query(".my_hand_ninja");
+
+                if (new_value[player.id]) {
+                    console.log(player.id + " " + new_value[player.id])
+                    div[0].innerText = new_value[player.id];
+                } else {
+                    console.log(player.id + " 0")
+                    div[0].innerText = 0;
+                }
+
+            }
+        },
+
         showDiscardPile: function() {
             this.myDlg = new ebg.popindialog();
             this.myDlg.create('discardPileDialog');
@@ -467,8 +483,9 @@ function (dojo, declare) {
         setupNotifications: function()
         {
             console.log( 'notifications subscriptions setup' );
-            dojo.subscribe( 'recruit', this, "notif_recruit" );
-            this.notifqueue.setSynchronous( 'recruit', 500 );
+            dojo.subscribe('recruit', this, "notif_recruit");
+            dojo.subscribe('beCorruptCard', this, 'notif_beCorruptCard');
+            dojo.subscribe('beCorruptDraw', this, 'notif_beCorruptDraw');
             
             // TODO: here, associate your game notifications with local methods
             
@@ -487,13 +504,24 @@ function (dojo, declare) {
         
         notif_recruit: function(notif) {
             // remove current possible moves (makes the board more clear)
-            console.log(notif.args.new_card[0]);
-
             var card = notif.args.new_card[0];
             var type = card.type;
             var value = card.type_arg;
             this.playerHand.addToStockWithId(this.getCardId(type, value), card.id)
-            
+        },
+
+        notif_beCorruptCard: function(notif) {
+
+        },
+
+        notif_beCorruptDraw: function(notif) {
+            for (let i in notif.args.new_cards) {
+                var card = notif.args.new_cards[i];
+                var type = card.type;
+                var value = card.type_arg;
+                console.log("card " + type + " " + value);
+                this.playerHand.addToStockWithId(this.getCardId(type, value), card.id)
+            }
         },
 
         /*

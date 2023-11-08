@@ -28,9 +28,9 @@
   <div id="table-hands">
     <div id="myhand_wrap" class="whiteblock">
       <h3>{MY_HAND}</h3>
-      <div class="ninja-master">
-        <div class="ninja" id="player_corrupted"></div>
-        <div id="my_hand_ninja">3</div>
+      <div class="ninja-master" id="player_corrupted">
+        <div class="ninja"></div>
+        <div class="my_hand_ninja">3</div>
       </div>
       <div id="myhand"></div>
     </div>
@@ -40,9 +40,9 @@
         <div class="playertablename" style="color: #{PLAYER_COLOR}">
             {PLAYER_NAME}
         </div>
-        <div class="ninja-master">
-          <div class="ninja ninja_{PLAYER_COLOR}"></div>
-          <div id="my_hand_ninja">3</div>
+        <div class="ninja-master ninja_{PLAYER_COLOR}">
+          <div class="ninja"></div>
+          <div class="my_hand_ninja">3</div>
         </div>
         <div class="playertablecard" id="playertablecard_{PLAYER_ID}"></div>
     </div>

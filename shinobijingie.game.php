@@ -182,6 +182,8 @@ class shinobijingie extends Table
 
         $result['cards_nb'] = $this->cards->countCardsInLocations();
 
+        $result['corrupt_cards'] = $this->cards->countCardsByLocationArgs('corrupt');
+
         return $result;
     }
 
@@ -224,41 +226,13 @@ class shinobijingie extends Table
 
     function recruit() {
         self::checkAction('recruit');
-
         $this->gamestate->nextState("recruit");
     }
 
     function beCorrupt() {
-        // self::checkAction('beCorrupt');
-
-        // $this->gamestate->nextState("beCorrupt");
+        self::checkAction('beCorrupt');
+        $this->gamestate->nextState("beCorrupt");
     }
-
-    /*
-    
-    Example:
-
-    function playCard( $card_id )
-    {
-        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'playCard' ); 
-        
-        $player_id = self::getActivePlayerId();
-        
-        // Add your game logic to play a card there 
-        ...
-        
-        // Notify all players about the card played
-        self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
-            'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
-            'card_name' => $card_name,
-            'card_id' => $card_id
-        ) );
-          
-    }
-    
-    */
 
     
 //////////////////////////////////////////////////////////////////////////////
@@ -304,7 +278,7 @@ class shinobijingie extends Table
         $card = $this->cards->pickCards(1,'deck',$current_player_id);
 
         // Notify player of their new card
-        self::notifyPlayer($current_player_id, 'recruit', clienttranslate('${player_name} draws a card'), array(
+        self::notifyPlayer($current_player_id, 'recruit', clienttranslate('${player_name} draw a card'), array(
             'player_id' => $current_player_id,
             'player_name' => self::getActivePlayerName(),
             'new_card' => $card
@@ -315,6 +289,25 @@ class shinobijingie extends Table
     }
     
     function stBeCorrupt() {
+        $current_player_id = self::getActivePlayerId();
+        $card = $this->cards->pickCardForLocation('deck', 'corrupt', $current_player_id);
+        // $card = $this->cards->pickCards(1,'deck',$current_player_id);
+
+        $cards = $this->cards->pickCards($card['type_arg'] + 2, 'deck', $current_player_id);
+
+        // Notify player of their new card
+        self::notifyAllPlayers('beCorruptCard', clienttranslate('${player_name} draw'.$card['type'].' '.$card['type_arg']), array(
+            'player_id' => $current_player_id,
+            'player_name' => self::getActivePlayerName(),
+            'new_card' => $card
+        ));
+
+        self::notifyPlayer($current_player_id, 'beCorruptDraw', clienttranslate('${player_name} draw '.($card['type_arg']+2).' cards'), array(
+            'player_id' => $current_player_id,
+            'player_name' => self::getActivePlayerName(),
+            'new_cards' => $cards
+        ));
+
         $this->gamestate->nextState( 'nextPlayer' );
     }
 
