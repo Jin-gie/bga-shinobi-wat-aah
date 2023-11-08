@@ -487,7 +487,13 @@ function (dojo, declare) {
         
         notif_recruit: function(notif) {
             // remove current possible moves (makes the board more clear)
-            console.log(notif.args.card);
+            console.log(notif.args.new_card[0]);
+
+            var card = notif.args.new_card[0];
+            var type = card.type;
+            var value = card.type_arg;
+            this.playerHand.addToStockWithId(this.getCardId(type, value), card.id)
+            
         },
 
         /*
