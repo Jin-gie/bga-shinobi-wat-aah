@@ -483,6 +483,7 @@ function (dojo, declare) {
         setupNotifications: function()
         {
             console.log( 'notifications subscriptions setup' );
+            dojo.subscribe('cardDrew', this, "notif_cardDrew");
             dojo.subscribe('recruit', this, "notif_recruit");
             dojo.subscribe('beCorruptCard', this, 'notif_beCorruptCard');
             dojo.subscribe('beCorruptDraw', this, 'notif_beCorruptDraw');
@@ -499,16 +500,20 @@ function (dojo, declare) {
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             // 
         },  
-        
-        // TODO: from this point and below, you can write your game notifications handling methods
+
+        notif_cardDrew: function(notif) {
+
+        },
         
         notif_recruit: function(notif) {
             // remove current possible moves (makes the board more clear)
-            var card = notif.args.new_card[0];
+            var card = notif.args.new_card;
             var type = card.type;
             var value = card.type_arg;
             this.playerHand.addToStockWithId(this.getCardId(type, value), card.id)
         },
+
+
 
         notif_beCorruptCard: function(notif) {
 
@@ -523,20 +528,5 @@ function (dojo, declare) {
                 this.playerHand.addToStockWithId(this.getCardId(type, value), card.id)
             }
         },
-
-        /*
-        Example:
-        
-        notif_cardPlayed: function( notif )
-        {
-            console.log( 'notif_cardPlayed' );
-            console.log( notif );
-            
-            // Note: notif.args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
-            
-            // TODO: play the card in the user interface.
-        },    
-        
-        */
    });             
 });

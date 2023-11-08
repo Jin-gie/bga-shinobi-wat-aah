@@ -275,14 +275,26 @@ class shinobijingie extends Table
     {
         
         $current_player_id = self::getActivePlayerId();
-        $card = $this->cards->pickCards(1,'deck',$current_player_id);
+        $card = $this->cards->pickCard('deck',$current_player_id);
 
-        // Notify player of their new card
-        self::notifyPlayer($current_player_id, 'recruit', clienttranslate('${player_name} draw a card'), array(
+
+        // Notify all players but active player that one card was drew
+        $players = self::loadPlayersBasicInfos();
+        foreach ($players as $player_id => $player)
+            if ($player_id != $current_player_id)
+                self::notifyPlayer($player_id, 'cardDrew', clienttranslate('${player_name} draw a card'), array(
+                    'player_id' => $current_player_id,
+                    'player_name' => self::getActivePlayerName(),
+                ));
+
+        // Notify active player of their new card
+        self::notifyPlayer($current_player_id, 'recruit', clienttranslate('You draw a '.$card['type'].' of value '.$card['type_arg']), array(
             'player_id' => $current_player_id,
             'player_name' => self::getActivePlayerName(),
             'new_card' => $card
         ));
+
+        
         
         // go to another gamestate
         $this->gamestate->nextState( 'nextPlayer' );
