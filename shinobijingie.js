@@ -513,10 +513,8 @@ function (dojo, declare) {
             this.playerHand.addToStockWithId(this.getCardId(type, value), card.id)
         },
 
-
-
         notif_beCorruptCard: function(notif) {
-
+            this.updateCorruptCardsNb(notif.args.corrupt);
         },
 
         notif_beCorruptDraw: function(notif) {

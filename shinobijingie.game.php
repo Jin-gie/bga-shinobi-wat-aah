@@ -294,8 +294,6 @@ class shinobijingie extends Table
             'new_card' => $card
         ));
 
-        
-        
         // go to another gamestate
         $this->gamestate->nextState( 'nextPlayer' );
     }
@@ -303,18 +301,31 @@ class shinobijingie extends Table
     function stBeCorrupt() {
         $current_player_id = self::getActivePlayerId();
         $card = $this->cards->pickCardForLocation('deck', 'corrupt', $current_player_id);
-        // $card = $this->cards->pickCards(1,'deck',$current_player_id);
 
-        $cards = $this->cards->pickCards($card['type_arg'] + 2, 'deck', $current_player_id);
 
-        // Notify player of their new card
-        self::notifyAllPlayers('beCorruptCard', clienttranslate('${player_name} draw'.$card['type'].' '.$card['type_arg']), array(
+        // Notify all players of the card and send new values of corrupted field
+        $corrupt = $this->cards->countCardsByLocationArgs('corrupt');
+        self::notifyAllPlayers('beCorruptCard', clienttranslate('${player_name} draw'.$card['type'].' of value '.$card['type_arg']), array(
             'player_id' => $current_player_id,
             'player_name' => self::getActivePlayerName(),
-            'new_card' => $card
+            'new_card' => $card,
+            'corrupt' => $corrupt
         ));
 
-        self::notifyPlayer($current_player_id, 'beCorruptDraw', clienttranslate('${player_name} draw '.($card['type_arg']+2).' cards'), array(
+        // Draw cards according to the value of drew card + 2
+        $cards = $this->cards->pickCards($card['type_arg'] + 2, 'deck', $current_player_id);
+
+        // Notify all players but active player of the number of drew cards
+        $players = self::loadPlayersBasicInfos();
+        foreach ($players as $player_id => $player)
+            if ($player_id != $current_player_id)
+                self::notifyPlayer($player_id, 'cardDrew', clienttranslate('${player_name} draw'. count($cards) .'cards'), array(
+                    'player_id' => $current_player_id,
+                    'player_name' => self::getActivePlayerName(),
+                ));
+
+        // Notify player of their new card
+        self::notifyPlayer($current_player_id, 'beCorruptDraw', clienttranslate('${player_name} draw '.count($cards).' cards'), array(
             'player_id' => $current_player_id,
             'player_name' => self::getActivePlayerName(),
             'new_cards' => $cards
