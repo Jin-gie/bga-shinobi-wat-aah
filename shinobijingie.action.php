@@ -61,6 +61,33 @@
 
     }
 
+    public function placeClan() {
+      self::setAjaxMode();     
+
+      // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
+      $this->game->placeClan();
+
+      self::ajaxResponse( );
+    }
+
+    public function reinforceClan() {
+      self::setAjaxMode();     
+
+      // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
+      $this->game->reinforceClan();
+
+      self::ajaxResponse( );
+    }
+
+    public function pass() {
+      self::setAjaxMode();     
+
+      // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
+      $this->game->pass();
+
+      self::ajaxResponse( );
+    }
+
 
     /*
     

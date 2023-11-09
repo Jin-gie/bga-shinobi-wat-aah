@@ -79,7 +79,7 @@ $machinestates = array(
         "type" => "game",
         "action" => "stRecruit",
         "updateGameProgression" => true,   
-        "transitions" => array( "nextPlayer" => 30 )
+        "transitions" => array( "selectCardsToPlace" => 13 )
     ),
 
 
@@ -88,6 +88,24 @@ $machinestates = array(
         "description" => '',
         "type" => "game",
         "action" => "stBeCorrupt",
+        "updateGameProgression" => true,   
+        "transitions" => array( "selectCardsToPlace" => 13 )
+    ),
+
+    13 => array(
+        "name" => "selectCardsToPlace",
+        "description" => clienttranslate('${actplayer} can select cards or pass'),
+        "descriptionmyturn" => clienttranslate('${you} can select cards or pass'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "placeClan", "reinforceClan", "pass" ),
+        "transitions" => array("power" => 20, "nextPlayer" => 30)
+    ),
+
+    20 => array(
+        "name" => "power",
+        "description" => '',
+        "type" => "game",
+        "action" => "stPower",
         "updateGameProgression" => true,   
         "transitions" => array( "nextPlayer" => 30 )
     ),

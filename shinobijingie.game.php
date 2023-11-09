@@ -234,6 +234,23 @@ class shinobijingie extends Table
         $this->gamestate->nextState("beCorrupt");
     }
 
+    function placeClan(){
+        self::checkAction('placeClan');
+        $this->gamestate->nextState("power");
+    }
+
+    function reinforceClan(){
+        self::checkAction('reinforceClan');
+        $this->gamestate->nextState("power");
+    }
+
+
+    function pass(){
+        self::checkAction('pass');
+        $this->gamestate->nextState("nextPlayer");
+    }
+
+
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
@@ -295,7 +312,7 @@ class shinobijingie extends Table
         ));
 
         // go to another gamestate
-        $this->gamestate->nextState( 'nextPlayer' );
+        $this->gamestate->nextState( 'selectCardsToPlace' );
     }
     
     function stBeCorrupt() {
@@ -331,6 +348,10 @@ class shinobijingie extends Table
             'new_cards' => $cards
         ));
 
+        $this->gamestate->nextState( 'selectCardsToPlace' );
+    }
+
+    function stPower() {
         $this->gamestate->nextState( 'nextPlayer' );
     }
 

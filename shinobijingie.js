@@ -228,6 +228,12 @@ function (dojo, declare) {
                         this.addActionButton('recruit_button', _('Draw one card'), 'onRecruitBtn');
                         this.addActionButton('beCorrupt_button', _('Be Corrupt'), 'onBeCorruptBtn');
                         break;
+
+                    case 'selectCardsToPlace':
+                        this.addActionButton('placeClan_button', _("Place clan"), 'onPlaceClanBtn');
+                        this.addActionButton('reinforceClan_button', _("Reinforce clan"), 'onReinforceClanBtn');
+                        this.addActionButton('pass_button', _("Pass"), 'onPassBtn', null, false, 'red');
+                        break;
 /*               
                  Example:
  
@@ -429,6 +435,43 @@ function (dojo, declare) {
             if ( this.checkAction('beCorrupt') ) // check that this action is possible at this moment
             {
                 this.ajaxcall("/shinobijingie/shinobijingie/beCorrupt.html", {
+                }, this, function(result) {});
+            }
+        },
+
+        onPlaceClanBtn: function(evt) {
+            console.log("Place clan");
+
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+
+            if ( this.checkAction('placeClan') ) // check that this action is possible at this moment
+            {
+                this.ajaxcall("/shinobijingie/shinobijingie/placeClan.html", {
+                }, this, function(result) {});
+            }
+        },
+
+        onReinforceClanBtn: function(evt) {
+            console.log("Reinforce clan");
+
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+
+            if ( this.checkAction('reinforceClan') ) // check that this action is possible at this moment
+            {
+                this.ajaxcall("/shinobijingie/shinobijingie/reinforceClan.html", {
+                }, this, function(result) {});
+            }
+        },
+
+        onPassBtn: function(evt) {
+            console.log("Pass");
+            dojo.stopEvent( evt );
+
+            if ( this.checkAction('pass') ) // check that this action is possible at this moment
+            {
+                this.ajaxcall("/shinobijingie/shinobijingie/pass.html", {
                 }, this, function(result) {});
             }
         },
