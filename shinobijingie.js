@@ -115,6 +115,7 @@ function (dojo, declare) {
             // PLAYER HAND
             this.playerHand = new ebg.stock();
             this.createStock(this.playerHand, $('myhand'), this.gamedatas.hand);
+            this.playerHand.setSelectionMode(0);
             
 
             // DISCARD PILE
@@ -127,6 +128,7 @@ function (dojo, declare) {
             this.discardPile.horizontal_overlap  = -1; // current bug in stock - this is needed to enable z-index on overlapping items
             this.discardPile.item_margin = 0; // has to be 0 if using overlap
             this.discardPile.updateDisplay(); // re-layout
+            this.discardPile.setSelectionMode(0);
 
 
             // get last card put in discard and display it
@@ -141,6 +143,7 @@ function (dojo, declare) {
             // }
 
             dojo.connect(this.discardPile, 'onChangeSelection', this, 'onPlayerDiscardChangeSelection');
+            dojo.connect(this.playerHand, 'onChangeSelection', this, 'onPlayerHandChangeSelection')
 
 
             // Modify number of cards in deck
@@ -170,17 +173,14 @@ function (dojo, declare) {
             
             switch( stateName )
             {
-            
-            /* Example:
-            
-            case 'myGameState':
-            
-                // Show some HTML block at this game state
-                dojo.style( 'my_html_block_id', 'display', 'block' );
-                
-                break;
-           */
-           
+
+                case 'selectCardsToPlace':
+                    if (this.isCurrentPlayerActive()) {
+                        this.playerHand.setSelectionMode(2);
+                        this.getSelectableCards(this.playerHand.getSelectedItems());
+                    }
+                    break;
+          
            
             case 'dummmy':
                 break;
@@ -197,15 +197,9 @@ function (dojo, declare) {
             switch( stateName )
             {
             
-            /* Example:
-            
-            case 'myGameState':
-            
-                // Hide the HTML block we are displaying only during this game state
-                dojo.style( 'my_html_block_id', 'display', 'none' );
-                
-                break;
-           */
+                case 'selectCardsToPlace':
+                    this.playerHand.setSelectionMode(0);
+                    break;
            
            
             case 'dummmy':
@@ -397,6 +391,111 @@ function (dojo, declare) {
                 this.showDiscardPile();
                 this.discardPile.unselectAll();
             }
+        },
+
+        
+        isClan: function(name) {
+            return (name.split("_").length === 1);
+        },
+
+        getSelectedClan: function(selectedCards) {
+            if (Object.keys(selectedCards).length > 0) {
+
+                var roninType = this.clanValues["Ronin"][1];
+
+                // if only one card : return card (will be yokai, clan or ronin)
+                if (Object.keys(selectedCards).length === 1) {
+                    return this.getCardClanName(selectedCards[0].type);
+                } else {
+                    // multiple cards : must find only clan (exclude ronins)
+                    for (var key in selectedCards) {
+                        if (selectedCards.hasOwnProperty(key)) {
+                            var type = selectedCards[key].type;
+                            // get selected clan
+                            if (type !== roninType) return this.getCardClanName(type);
+                        }
+                    }
+                }
+            }
+
+            return null;
+        },
+
+        getSelectableCards: function(selectedCards) {
+            // Name of clan/yokai/ronin or null if none is selected 
+            var selectedClan = this.getSelectedClan(selectedCards);
+
+            // Get all unselected cards to then make sorting
+            var unselectedCards = this.playerHand.getUnselectedItems();
+
+            console.log(unselectedCards);
+
+            for (card in unselectedCards) {
+                var type = unselectedCards[card]['type'];
+                var id = unselectedCards[card]['id'];
+
+                if (selectedClan) {
+                    if (selectedClan.split("_").length === 1) {
+                        // // there is a clan or ronin selected
+                        if (selectedClan === "Ronin" && 
+                            (this.getCardClanName(type) === "Ronin" || 
+                            this.isClan(this.getCardClanName(type)))) {
+
+                            // case only one ronin : can select any other CLAN or Ronin card
+                            console.log("only one ronin is selected");
+                            dojo.addClass(this.playerHand.getItemDivId(id), 'selectable');
+
+                            
+                        } else if (this.getCardClanName(type) === selectedClan){
+
+                            // case real clan selected : can select other cards of same clan or ronin
+                            console.log("Clan " + selectedClan + " is selected");
+                            dojo.addClass(this.playerHand.getItemDivId(id), 'selectable');
+
+                        } else {
+                            // card should not be selectable : remove selectable class
+                            dojo.removeClass(this.playerHand.getItemDivId(id), 'selectable');
+                        }
+                    } else {
+
+                        // there is a yokai selected : cannot select other card
+                        console.log("Yokai " + selectedClan + " is selected");
+                        dojo.removeClass(this.playerHand.getItemDivId(id), 'selectable');
+
+                    }
+                } else {
+                    // no card is selected : all cards become selectable
+                    console.log("No card selected");
+                    dojo.addClass(this.playerHand.getItemDivId(id), 'selectable');
+
+                }
+            }
+            
+
+            // if already one clan : can select all cards
+
+            // if no clan : cannot select yokai
+
+            // max 4 cards of same clan or ronin
+        },
+
+
+        onPlayerHandChangeSelection: function(control_name, item_id) {
+            // check if card is selectable, else remove selection
+            console.log(item_id);
+
+
+            var selectedCardDiv = this.playerHand.getItemDivId(item_id);
+
+            if (dojo.hasClass(selectedCardDiv, 'selectable')) {
+                dojo.removeClass(selectedCardDiv, 'selectable');
+            } else {
+                this.playerHand.unselectItem(item_id);
+            }
+
+
+
+            this.getSelectableCards(this.playerHand.getSelectedItems());
         },
 
         ///////////////////////////////////////////////////

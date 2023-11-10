@@ -87,5 +87,7 @@
     background-color: #1D1914;
 }
 
-
+.selectable {
+    border: 1px solid rgb(46, 186, 211) !important;
+}
 
