@@ -33,6 +33,7 @@
         <div class="my_hand_ninja">3</div>
       </div>
       <div id="myhand"></div>
+      <div id="myplacedcards"></div>
     </div>
 
     <!-- BEGIN player -->
@@ -45,6 +46,7 @@
           <div class="my_hand_ninja">3</div>
         </div>
         <div class="playertablecard" id="playertablecard_{PLAYER_ID}"></div>
+        <div class="playerplacedcards" id="playerplacedcards_{PLAYER_ID}"></div>
     </div>
     <!-- END player -->
   </div>

@@ -65,16 +65,29 @@
       self::setAjaxMode();     
 
       // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-      $this->game->placeClan();
+      $playedCards = explode(',', self::getArg("playedCards", AT_numberlist, true));
 
-      self::ajaxResponse( );
+      $playedCards = array_map(function($str) {
+          // Remove non-numeric characters
+          $numericString = preg_replace('/[^0-9]/', '', $str);
+      
+          // Convert the string to an integer
+          return (int)$numericString;
+      }, $playedCards);
+
+      self::trace("HERE I AM");
+      self::dump('playedCards', $playedCards);
+
+      $result = $this->game->placeClan($playedCards);
+
+      self::ajaxResponse();
     }
 
     public function reinforceClan() {
       self::setAjaxMode();     
 
       // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-      $this->game->reinforceClan();
+      $result = $this->game->reinforceClan();
 
       self::ajaxResponse( );
     }

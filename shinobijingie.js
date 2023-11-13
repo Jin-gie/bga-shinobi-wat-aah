@@ -487,10 +487,12 @@ function (dojo, declare) {
 
             var selectedCardDiv = this.playerHand.getItemDivId(item_id);
 
-            if (dojo.hasClass(selectedCardDiv, 'selectable')) {
-                dojo.removeClass(selectedCardDiv, 'selectable');
-            } else {
-                this.playerHand.unselectItem(item_id);
+            if (!(selectedCardDiv.split("_")[2] === "undefined")) {
+                if (dojo.hasClass(selectedCardDiv, 'selectable')) {
+                    dojo.removeClass(selectedCardDiv, 'selectable');
+                } else {
+                    this.playerHand.unselectItem(item_id);
+                }
             }
 
 
@@ -544,10 +546,49 @@ function (dojo, declare) {
             // Preventing default browser reaction
             dojo.stopEvent( evt );
 
+            
             if ( this.checkAction('placeClan') ) // check that this action is possible at this moment
             {
-                this.ajaxcall("/shinobijingie/shinobijingie/placeClan.html", {
-                }, this, function(result) {});
+                switch (this.playerHand.getSelectedItems().length) {
+                    case 0:
+                        // no card selected
+                        this.showMessage(_('You first need to select card(s)!'), 'error');
+                        return;
+                    
+                    case 1:
+                        // only one card selected
+                        this.showMessage(_('You need to select 2, 3 or 4 cards to place a clan!'), 'error');
+                        return;
+                    
+                    case this.playerHand.getSelectedItems().length > 4:
+                        // more than 4 cards (max cards of a clan)
+                        this.showMessage(_('You need to between 2 and 4 cards to place a clan!'), 'error');
+                        return;
+                
+                    default:
+                        // check if this clan is not in place
+                        console.log("Cards need to be send to server side")
+
+                        // get this ids of the selected cards
+                        var selectedCards = this.playerHand.getSelectedItems().map(item => parseInt(item.id));
+                        console.log(selectedCards.join(','));
+
+                        // pass in the ids of the selected cards (ids are the same here and in db)
+                        this.ajaxcall("/shinobijingie/shinobijingie/placeClan.html", {
+                            playedCards: selectedCards.join(',')   
+                        }, this, function(result) {
+                            this.playerHand.unselectAll();
+                        });
+                        break;
+                }
+                // if (this.playerHand.getSelectedItems().length > 0) {
+                //     if ()
+                // } else {
+                //     this.showMessage(_('You first need to select card(s)!'), 'error');
+                //     return;
+                // }
+                // this.ajaxcall("/shinobijingie/shinobijingie/placeClan.html", {
+                // }, this, function(result) {});
             }
         },
 
@@ -629,6 +670,7 @@ function (dojo, declare) {
             dojo.subscribe('recruit', this, "notif_recruit");
             dojo.subscribe('beCorruptCard', this, 'notif_beCorruptCard');
             dojo.subscribe('beCorruptDraw', this, 'notif_beCorruptDraw');
+            dojo.subscribe('placeClan', this, 'notif_placeClan');
             
             // TODO: here, associate your game notifications with local methods
             
@@ -667,6 +709,10 @@ function (dojo, declare) {
                 console.log("card " + type + " " + value);
                 this.playerHand.addToStockWithId(this.getCardId(type, value), card.id)
             }
+        },
+
+        notif_placeClan: function(notif) {
+            console.log("Notif played" + notif.args.played_cards);
         },
    });             
 });
