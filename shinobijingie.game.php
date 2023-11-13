@@ -184,6 +184,7 @@ class shinobijingie extends Table
 
         $result['corrupt_cards'] = $this->cards->countCardsByLocationArgs('corrupt');
 
+        $result['cards_played_by_player'] = $this->cards->getCardsInLocation('played');
         return $result;
     }
 
@@ -242,12 +243,12 @@ class shinobijingie extends Table
         $this->cards->moveCards($playedCards, 'played', $current_player_id);
 
         // Notify players of the clan played
-        // self::notifyAllPlayers("placeClan", clienttranslate('${player_name} placed a clan'), array(
-        //     'player_id' => $current_player_id,
-        //     'player_name' => self::getActivePlayerName(),
-        //     // 'card_nbr' => count($playedCards),
-        //     'played_cards' => $playedCards
-        // ));
+        self::notifyAllPlayers("placeClan", clienttranslate('${player_name} placed a clan'), array(
+            'player_id' => $current_player_id,
+            'player_name' => self::getActivePlayerName(),
+            // 'card_nbr' => count($playedCards),
+            'played_cards' => $playedCards
+        ));
 
         $this->gamestate->nextState("nextPlayer");
     }

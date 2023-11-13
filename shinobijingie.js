@@ -98,6 +98,9 @@ function (dojo, declare) {
         setup: function( gamedatas )
         {
             console.log( "Starting game setup" );
+
+            this.played_cards_players = {};
+
             
             // Setting up player boards
             for( var player_id in gamedatas.players )
@@ -105,6 +108,24 @@ function (dojo, declare) {
                 var player = gamedatas.players[player_id];
                          
                 // TODO: Setting up players boards if needed
+
+                // PLAYED CARDS OF EACH PLAYER
+
+                console.log(player.id)
+
+                // get played cards of this player from gamedata
+                played_cards = [];
+                for (card_id in this.gamedatas.cards_played_by_player) {
+                    let card = this.gamedatas.cards_played_by_player[card_id];
+                    if(card['location_arg'] == player.id) played_cards.push(card);
+                }
+
+                div_id = this.player_id == player.id ? 'myplacedcards' : 'playerplacedcards_' + player.id;
+
+
+                this.played_cards_players[player.id] = new ebg.stock();
+                this.createStock(this.played_cards_players[player.id], $(div_id), played_cards);
+                this.played_cards_players[player.id].setSelectionMode(0);
             }
             
             // TODO: Set up your game interface here, according to "gamedatas"
@@ -350,10 +371,8 @@ function (dojo, declare) {
                 var div = dojo.query('.ninja_' + player.color).query(".my_hand_ninja");
 
                 if (new_value[player.id]) {
-                    console.log(player.id + " " + new_value[player.id])
                     div[0].innerText = new_value[player.id];
                 } else {
-                    console.log(player.id + " 0")
                     div[0].innerText = 0;
                 }
 
@@ -428,8 +447,6 @@ function (dojo, declare) {
             // Get all unselected cards to then make sorting
             var unselectedCards = this.playerHand.getUnselectedItems();
 
-            console.log(unselectedCards);
-
             for (card in unselectedCards) {
                 var type = unselectedCards[card]['type'];
                 var id = unselectedCards[card]['id'];
@@ -442,14 +459,12 @@ function (dojo, declare) {
                             this.isClan(this.getCardClanName(type)))) {
 
                             // case only one ronin : can select any other CLAN or Ronin card
-                            console.log("only one ronin is selected");
                             dojo.addClass(this.playerHand.getItemDivId(id), 'selectable');
 
                             
                         } else if (this.getCardClanName(type) === selectedClan){
 
                             // case real clan selected : can select other cards of same clan or ronin
-                            console.log("Clan " + selectedClan + " is selected");
                             dojo.addClass(this.playerHand.getItemDivId(id), 'selectable');
 
                         } else {
@@ -459,13 +474,11 @@ function (dojo, declare) {
                     } else {
 
                         // there is a yokai selected : cannot select other card
-                        console.log("Yokai " + selectedClan + " is selected");
                         dojo.removeClass(this.playerHand.getItemDivId(id), 'selectable');
 
                     }
                 } else {
                     // no card is selected : all cards become selectable
-                    console.log("No card selected");
                     dojo.addClass(this.playerHand.getItemDivId(id), 'selectable');
 
                 }
@@ -482,7 +495,6 @@ function (dojo, declare) {
 
         onPlayerHandChangeSelection: function(control_name, item_id) {
             // check if card is selectable, else remove selection
-            console.log(item_id);
 
 
             var selectedCardDiv = this.playerHand.getItemDivId(item_id);
@@ -567,11 +579,9 @@ function (dojo, declare) {
                 
                     default:
                         // check if this clan is not in place
-                        console.log("Cards need to be send to server side")
 
                         // get this ids of the selected cards
                         var selectedCards = this.playerHand.getSelectedItems().map(item => parseInt(item.id));
-                        console.log(selectedCards.join(','));
 
                         // pass in the ids of the selected cards (ids are the same here and in db)
                         this.ajaxcall("/shinobijingie/shinobijingie/placeClan.html", {
