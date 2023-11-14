@@ -33,6 +33,7 @@
         <div class="my_hand_ninja">3</div>
       </div>
       <div id="myhand"></div>
+        <div class="line"></div>
       <div id="myplacedcards"></div>
     </div>
 

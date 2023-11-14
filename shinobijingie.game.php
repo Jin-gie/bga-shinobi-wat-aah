@@ -247,7 +247,7 @@ class shinobijingie extends Table
             'player_id' => $current_player_id,
             'player_name' => self::getActivePlayerName(),
             // 'card_nbr' => count($playedCards),
-            'played_cards' => $playedCards
+            'played_cards' => $this->cards->getCards($playedCards)
         ));
 
         $this->gamestate->nextState("nextPlayer");

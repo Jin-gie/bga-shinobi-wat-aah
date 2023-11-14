@@ -110,9 +110,6 @@ function (dojo, declare) {
                 // TODO: Setting up players boards if needed
 
                 // PLAYED CARDS OF EACH PLAYER
-
-                console.log(player.id)
-
                 // get played cards of this player from gamedata
                 played_cards = [];
                 for (card_id in this.gamedatas.cards_played_by_player) {
@@ -121,7 +118,6 @@ function (dojo, declare) {
                 }
 
                 div_id = this.player_id == player.id ? 'myplacedcards' : 'playerplacedcards_' + player.id;
-
 
                 this.played_cards_players[player.id] = new ebg.stock();
                 this.createStock(this.played_cards_players[player.id], $(div_id), played_cards);
@@ -308,6 +304,7 @@ function (dojo, declare) {
             stock.image_items_per_row = 9;
             let clans = this.getClans();
 
+            // add all possible cards in stock
             for (let clan in clans) {
                 clans[clan].forEach(cardValue => {
                     var card_id = this.getCardId(clan, cardValue);
@@ -352,6 +349,10 @@ function (dojo, declare) {
             }
         
             return null;
+        },
+
+        getCardIdFromRealId: function(id) {
+
         },
 
         updateDeckCardsNb: function (new_value) {
@@ -716,13 +717,32 @@ function (dojo, declare) {
                 var card = notif.args.new_cards[i];
                 var type = card.type;
                 var value = card.type_arg;
-                console.log("card " + type + " " + value);
+                console.log("card " + type + " " + value + " ; card.id " + card.id + " ; calculated id " + this.getCardId(type, value));
                 this.playerHand.addToStockWithId(this.getCardId(type, value), card.id)
             }
         },
 
         notif_placeClan: function(notif) {
-            console.log("Notif played" + notif.args.played_cards);
+            console.log("Notif played" + JSON.stringify(notif.args.played_cards));
+
+            var player = this.getActivePlayerId();
+
+            // card.id = real id of the card (same as in db)
+            // calculated id = place of card on sprite
+
+            for (let i in notif.args.played_cards) {
+                var card = notif.args.played_cards[i];
+                var type = card.type;
+                var value = card.type_arg;
+
+                // add new cards in play area
+                this.played_cards_players[player].addToStockWithId(this.getCardId(type, value), card.id);
+            
+                // remove card from hand
+                this.playerHand.removeFromStockById(card.id);
+            }
+
+            
         },
    });             
 });
