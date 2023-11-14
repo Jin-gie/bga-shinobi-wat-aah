@@ -138,7 +138,7 @@ function (dojo, declare) {
             // DISCARD PILE
             this.discardPile = new ebg.stock();
             this.createStock(this.discardPile, $('discard'), this.gamedatas.discard);
-            this.discardPile.container_div.width = "60px"; // enought just for 1 card
+            this.discardPile.container_div.width = this.cardwidth; // enought just for 1 card
             this.discardPile.autowidth = false; // this is required so it obeys the width set above
             this.discardPile.use_vertical_overlap_as_offset = false; // this is to use normal vertical_overlap
             this.discardPile.vertical_overlap = 100; // overlap
@@ -463,7 +463,8 @@ function (dojo, declare) {
                             dojo.addClass(this.playerHand.getItemDivId(id), 'selectable');
 
                             
-                        } else if (this.getCardClanName(type) === selectedClan){
+                        } else if (this.getCardClanName(type) === selectedClan || 
+                                    this.getCardClanName(type) === "Ronin" ){
 
                             // case real clan selected : can select other cards of same clan or ronin
                             dojo.addClass(this.playerHand.getItemDivId(id), 'selectable');
@@ -553,6 +554,14 @@ function (dojo, declare) {
             }
         },
 
+        areSelectedCardsOnlyRonin: function(selected_cards) {
+            for (card in selected_cards) {
+                if (this.getCardClanName(selected_cards[card]["type"]) !== "Ronin") return false;
+            }
+
+            return true;
+        },
+
         onPlaceClanBtn: function(evt) {
             console.log("Place clan");
 
@@ -572,13 +581,20 @@ function (dojo, declare) {
                         // only one card selected
                         this.showMessage(_('You need to select 2, 3 or 4 cards to place a clan!'), 'error');
                         return;
-                    
-                    case this.playerHand.getSelectedItems().length > 4:
-                        // more than 4 cards (max cards of a clan)
-                        this.showMessage(_('You need to between 2 and 4 cards to place a clan!'), 'error');
-                        return;
                 
                     default:
+                        // check if more than 4 cards
+                        if (this.playerHand.getSelectedItems().length > 4) {
+                            this.showMessage(_('You need to between 2 and 4 cards to place a clan!'), 'error');
+                            return;
+                        }
+
+                        // check if only ronins are selected
+                        if (this.areSelectedCardsOnlyRonin(this.playerHand.getSelectedItems())) {
+                            this.showMessage(_('You need to select at least one clan card!'), 'error');
+                            return;
+                        }
+
                         // check if this clan is not in place
 
                         // get this ids of the selected cards
