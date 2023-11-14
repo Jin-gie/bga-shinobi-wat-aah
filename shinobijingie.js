@@ -698,6 +698,7 @@ function (dojo, declare) {
             dojo.subscribe('beCorruptCard', this, 'notif_beCorruptCard');
             dojo.subscribe('beCorruptDraw', this, 'notif_beCorruptDraw');
             dojo.subscribe('placeClan', this, 'notif_placeClan');
+            dojo.subscribe('nbCardsInDeck', this, 'notif_nbCardsInDeck');
             
             // TODO: here, associate your game notifications with local methods
             
@@ -757,8 +758,11 @@ function (dojo, declare) {
                 // remove card from hand
                 this.playerHand.removeFromStockById(card.id);
             }
-
             
+        },
+
+        notif_nbCardsInDeck: function(notif) {
+            this.updateDeckCardsNb(notif.args.nb_cards);
         },
    });             
 });

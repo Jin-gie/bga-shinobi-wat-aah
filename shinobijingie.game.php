@@ -325,6 +325,14 @@ class shinobijingie extends Table
             'new_card' => $card
         ));
 
+        // Notify all players of the new number of cards in deck
+        $deck_cards = $this->cards->countCardsInLocation('deck');
+        self::notifyAllPlayers('nbCardsInDeck', clienttranslate('There are now ${nb_cards} in deck'), array(
+            'player_id' => $current_player_id,
+            'player_name' => self::getActivePlayerName(),
+            'nb_cards' => $deck_cards
+        ));
+
         // go to another gamestate
         $this->gamestate->nextState( 'selectCardsToPlace' );
     }
@@ -360,6 +368,14 @@ class shinobijingie extends Table
             'player_id' => $current_player_id,
             'player_name' => self::getActivePlayerName(),
             'new_cards' => $cards
+        ));
+
+        // Notify all players of the new number of cards in deck
+        $deck_cards = $this->cards->countCardsInLocation('deck');
+        self::notifyAllPlayers('nbCardsInDeck', clienttranslate('There are now ${nb_cards} in deck'), array(
+            'player_id' => $current_player_id,
+            'player_name' => self::getActivePlayerName(),
+            'nb_cards' => $deck_cards
         ));
 
         $this->gamestate->nextState( 'selectCardsToPlace' );
